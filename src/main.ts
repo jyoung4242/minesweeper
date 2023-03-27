@@ -102,8 +102,9 @@ const model = {
           break;
       }
     },
-    sRightClick: (event: any, model: any, attribute: any, element: HTMLElement) => {
-      if (model.minesweeper.waitingOnReset) return;
+    sRightClick: (event: any, model: any, element: HTMLElement, attribute: any, object: any) => {
+      let localModal = object.$parent.$model;
+      if (localModal.minesweeper.waitingOnReset) return;
       let gaurdClickStatus =
         model.square.state == squareStates.null ||
         model.square.state == squareStates.showX ||
