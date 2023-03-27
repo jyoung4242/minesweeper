@@ -92,6 +92,8 @@ const model = {
             model.square.state = squareStates.null;
             console.log("checking: ", model.square.$index);
 
+            if (model.square.$index == 89) console.log(model.square);
+
             recursiveMineCheck(model.square.$index);
           } else {
             model.square.state = squareStates.showNumber;
@@ -182,10 +184,10 @@ const model = {
       });
 
       //based on difficulty level, choose random square indexes for
-      let chosenSquares = chance.pickset(model.minesweeper.squares, model.minesweeper.numOfTargets);
-      //let chosenSquares = [14, 24, 27, 30, 38, 45, 53, 58, 63, 81];
-      //chosenSquares.forEach((index: any) => (model.minesweeper.squares[index].status = true));
-      chosenSquares.forEach((sq: any) => (sq.status = true));
+      //let chosenSquares = chance.pickset(model.minesweeper.squares, model.minesweeper.numOfTargets);
+      let chosenSquares = [42, 44, 73, 72, 67, 54, 55, 52, 85, 76];
+      chosenSquares.forEach((index: any) => (model.minesweeper.squares[index].status = true));
+      //chosenSquares.forEach((sq: any) => (sq.status = true));
     },
   },
 };
@@ -280,13 +282,13 @@ for (let index = 0; index < 90; index++) {
           });
           break;
         case "bottomleft":
-          squaresToCheck.push(61, 62, 76);
+          squaresToCheck.push(60, 61, 76);
           squaresToCheck.forEach((s: number) => {
             if (checkSquare(s)) count++;
           });
           break;
         case "bottomright":
-          squaresToCheck.push(88, 75, 74);
+          squaresToCheck.push(88, 73, 74);
           squaresToCheck.forEach((s: number) => {
             if (checkSquare(s)) count++;
           });
@@ -374,7 +376,15 @@ function recursiveMineCheck(index: number) {
   const bottom = index + 15 <= 89 ? index + 15 : null;
   const bottomRight = index % 15 != 14 && index + 16 <= 89 ? index + 16 : null;
 
+  if (index == 89) {
+    console.log(topLeft, top, topRight);
+    console.log(left, right);
+    console.log(bottomLeft, bottom, bottomRight);
+  }
+
   if (topLeft != null && topLeft! >= 0 && topLeft! <= 89) {
+    console.log(model.minesweeper.squares[topLeft]);
+
     if (model.minesweeper.squares[topLeft].state == squareStates.unclicked) {
       if (model.minesweeper.squares[topLeft].numberValue == 0) {
         model.minesweeper.squares[topLeft].state = squareStates.null;
