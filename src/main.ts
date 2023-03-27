@@ -40,6 +40,7 @@ const model = {
   level: "easy",
   result: "waiting",
   minesweeper: {
+    waitingOnReset: false,
     victoryStatus: "cancelled",
     get remainingToFind() {
       let num: number = this.countQuestionMarks();
@@ -53,6 +54,9 @@ const model = {
       return count;
     },
     squareclick: (event: any, model: any, element: HTMLElement, attribute: any, object: any) => {
+      let localModal = object.$parent.$model;
+
+      if (localModal.minesweeper.waitingOnReset) return;
       let gaurdClickStatus =
         model.square.state == squareStates.null ||
         model.square.state == squareStates.showX ||
@@ -68,8 +72,6 @@ const model = {
           if (model.square.status) {
             model.square.state = squareStates.showX;
 
-            let localModal = object.$parent.$model;
-
             if (localModal.minesweeper.attempts > 3) {
               localModal.minesweeper.numOfTries[2].status = true;
               localModal.minesweeper.victoryStatus = "UNSUCCESSFUL!";
@@ -79,6 +81,7 @@ const model = {
               }, 1500);
             } else {
               //redo attempt
+              localModal.minesweeper.waitingOnReset = true;
               localModal.minesweeper.numOfTries[localModal.minesweeper.attempts - 1].status = true;
             }
             //increment 'tries'
@@ -100,6 +103,7 @@ const model = {
       }
     },
     sRightClick: (event: any, model: any, attribute: any, element: HTMLElement) => {
+      if (model.minesweeper.waitingOnReset) return;
       let gaurdClickStatus =
         model.square.state == squareStates.null ||
         model.square.state == squareStates.showX ||
@@ -125,6 +129,7 @@ const model = {
       model.result = model.minesweeper.victoryStatus;
     },
     resetGame: (event: any, model: any) => {
+      model.minesweeper.waitingOnReset = false;
       console.log(model.minesweeper.attempts);
       if (model.minesweeper.attempts > 3) return;
       model.minesweeper.numOfTries[model.minesweeper.attempts - 1].status = true;
@@ -132,9 +137,10 @@ const model = {
       model.minesweeper.onLoad(model);
     },
     showFinalModal: false,
-    showHelp: () => {
-      console.log(model.minesweeper);
+    showHelp: (event: any, model: any) => {
+      model.minesweeper.isHelpVisible = !model.minesweeper.isHelpVisible;
     },
+    isHelpVisible: false,
     isVisible: false,
     appwidth: 500,
     numOfTargets: 5,
@@ -325,6 +331,15 @@ const template = `<div>
                 </div>
             </div>
         </div>  
+        <div class="helpModal" \${===minesweeper.isHelpVisible}>
+          <div class="helpText">
+            <p>Instructions: Objective of game is to identify the hotspots through the process of elimination without clicking on them.</p>
+            <p>Controls: left-click on a square to uncover it. right-click on square to flag it as hotspot</p>
+            <p>GamePlay: if you uncover square with nothing around it, the null squares will collaps till you get close to hotspots</p>
+            <p>The number of hotspots adjacent to a tile will be shown as a number in the square</p>
+            <p>If you hit a hotspot, this attempt fails, and you need to click reset to try again, you get four tries</p>
+          </div>
+        </div>
         <div class="finalModal" \${===minesweeper.showFinalModal}>
           <div class="modalText">\${minesweeper.victoryStatus}</div>
         </div> 

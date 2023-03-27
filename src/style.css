@@ -60,6 +60,7 @@ body {
 }
 
 .pipFlex {
+  user-select: none;
   position: absolute;
   top: 20px;
   right: 10px;
@@ -73,6 +74,7 @@ body {
 }
 
 .pipButtons {
+  user-select: none;
   cursor: pointer;
   border: transparent 1px solid;
   border-radius: 500px;
@@ -140,6 +142,7 @@ body {
 }
 
 .game_title {
+  user-select: none;
   position: absolute;
   top: 15px;
   font-family: myFont;
@@ -156,6 +159,7 @@ body {
   text-align: center;
   color: var(--trs80-light-green);
   width: 100%;
+  user-select: none;
 }
 
 .lampflex {
@@ -175,8 +179,9 @@ body {
 }
 
 .lamptitle {
+  user-select: none;
   font-family: myFont;
-  font-size: 0.5vw;
+  font-size: x-small;
   text-align: left;
   color: var(--trs80-light-green);
 }
@@ -208,6 +213,7 @@ body {
   align-content: flex-start;
   gap: 1px;
   padding: 2px;
+  user-select: none;
 }
 .gamesquares {
   aspect-ratio: 1/1;
@@ -216,9 +222,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font: 0.4vw;
+  font: xx-small;
   color: var(--trs80-light-green);
   font-family: Helvetica;
+  user-select: none;
 }
 
 .finalModal {
@@ -246,7 +253,36 @@ body {
   text-align: center;
 }
 
+.helpModal {
+  user-select: none;
+  padding: 15px;
+  position: absolute;
+  border: #03f106 3px solid;
+  background-color: #004400;
+  border-radius: 10px;
+  width: 400px;
+  height: 200px;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: flex-start;
+}
+
+.helpText {
+  user-select: none;
+  width: 100%;
+  color: #c4ced2;
+  font-size: 10px;
+  font-family: myFont;
+  text-align: left;
+}
+
 .countdown {
+  user-select: none;
   position: absolute;
   top: 20px;
   left: 20px;
