@@ -184,10 +184,10 @@ const model = {
       });
 
       //based on difficulty level, choose random square indexes for
-      //let chosenSquares = chance.pickset(model.minesweeper.squares, model.minesweeper.numOfTargets);
-      let chosenSquares = [42, 44, 73, 72, 67, 54, 55, 52, 85, 76];
-      chosenSquares.forEach((index: any) => (model.minesweeper.squares[index].status = true));
-      //chosenSquares.forEach((sq: any) => (sq.status = true));
+      let chosenSquares = chance.pickset(model.minesweeper.squares, model.minesweeper.numOfTargets);
+      //let chosenSquares = [42, 44, 73, 72, 67, 54, 55, 52, 85, 76];
+      //chosenSquares.forEach((index: any) => (model.minesweeper.squares[index].status = true));
+      chosenSquares.forEach((sq: any) => (sq.status = true));
     },
   },
 };
