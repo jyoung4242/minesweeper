@@ -31,8 +31,10 @@ const model = {
         model.minesweeper.numOfTargets = 20;
         break;
     }
-    model.minesweeper.numOfTries.forEach((t: any) => (t.status = false));
+    model.result = "PENDING";
+    model.minesweeper.numOfTries.forEach((t: any) => (t.status = true));
     model.minesweeper.isVisible = !model.minesweeper.isVisible;
+    model.minesweeper.attempts = 1;
     setTimeout(() => {
       model.minesweeper.onLoad(model);
     }, 375);
@@ -73,16 +75,52 @@ const model = {
             model.square.state = squareStates.showX;
 
             if (localModal.minesweeper.attempts > 3) {
-              localModal.minesweeper.numOfTries[2].status = true;
+              //gameover
+              localModal.minesweeper.numOfTries[0].status = false;
+              localModal.minesweeper.numOfTries[1].status = false;
+              localModal.minesweeper.numOfTries[2].status = false;
+              localModal.minesweeper.numOfTries[3].status = false;
+
               localModal.minesweeper.victoryStatus = "UNSUCCESSFUL!";
               localModal.minesweeper.showFinalModal = true;
               setTimeout(() => {
                 localModal.minesweeper.closeGame(null, localModal);
               }, 1500);
             } else {
-              //redo attempt
+              //increment attempts
+              console.log(localModal.minesweeper.attempts);
+
               localModal.minesweeper.waitingOnReset = true;
-              localModal.minesweeper.numOfTries[localModal.minesweeper.attempts - 1].status = true;
+              localModal.minesweeper.attempts++;
+              switch (localModal.minesweeper.attempts) {
+                case 1:
+                  localModal.minesweeper.numOfTries[0].status = true;
+                  localModal.minesweeper.numOfTries[1].status = true;
+                  localModal.minesweeper.numOfTries[2].status = true;
+                  localModal.minesweeper.numOfTries[3].status = true;
+                  break;
+                case 2:
+                  localModal.minesweeper.numOfTries[0].status = true;
+                  localModal.minesweeper.numOfTries[1].status = true;
+                  localModal.minesweeper.numOfTries[2].status = true;
+                  localModal.minesweeper.numOfTries[3].status = false;
+
+                  break;
+                case 3:
+                  localModal.minesweeper.numOfTries[0].status = true;
+                  localModal.minesweeper.numOfTries[1].status = true;
+                  localModal.minesweeper.numOfTries[2].status = false;
+                  localModal.minesweeper.numOfTries[3].status = false;
+
+                  break;
+                case 4:
+                  localModal.minesweeper.numOfTries[0].status = true;
+                  localModal.minesweeper.numOfTries[1].status = false;
+                  localModal.minesweeper.numOfTries[2].status = false;
+                  localModal.minesweeper.numOfTries[3].status = false;
+
+                  break;
+              }
             }
             //increment 'tries'
             return;
@@ -90,10 +128,6 @@ const model = {
           if (model.square.numberValue == 0) {
             //run collapsing routine here
             model.square.state = squareStates.null;
-            console.log("checking: ", model.square.$index);
-
-            if (model.square.$index == 89) console.log(model.square);
-
             recursiveMineCheck(model.square.$index);
           } else {
             model.square.state = squareStates.showNumber;
@@ -126,17 +160,15 @@ const model = {
       checkforVictory();
     },
     closeGame: (event: any, model: any) => {
-      console.log(model);
-
       model.minesweeper.isVisible = false;
       model.result = model.minesweeper.victoryStatus;
     },
     resetGame: (event: any, model: any) => {
       model.minesweeper.waitingOnReset = false;
-      console.log(model.minesweeper.attempts);
-      if (model.minesweeper.attempts > 3) return;
-      model.minesweeper.numOfTries[model.minesweeper.attempts - 1].status = true;
-      model.minesweeper.attempts++;
+
+      if (model.minesweeper.attempts > 4) return;
+      //model.minesweeper.numOfTries[model.minesweeper.attempts - 1].status = true;
+      //model.minesweeper.attempts++;
       model.minesweeper.onLoad(model);
     },
     showFinalModal: false,
@@ -151,7 +183,7 @@ const model = {
     numOfTries: [
       {
         id: 0,
-        status: false,
+        status: true,
         get getframe() {
           if (this.status) return -20;
           else return 0;
@@ -159,7 +191,7 @@ const model = {
       },
       {
         id: 1,
-        status: false,
+        status: true,
         get getframe() {
           if (this.status) return -20;
           else return 0;
@@ -167,7 +199,15 @@ const model = {
       },
       {
         id: 2,
-        status: false,
+        status: true,
+        get getframe() {
+          if (this.status) return -20;
+          else return 0;
+        },
+      },
+      {
+        id: 3,
+        status: true,
         get getframe() {
           if (this.status) return -20;
           else return 0;
@@ -177,7 +217,9 @@ const model = {
     squares: <any>[],
     onLoad: (model: any) => {
       //defaults loaded
-
+      model.minesweeper.waitingOnReset = false;
+      model.minesweeper.showFinalModal = false;
+      model.minesweeper.isHelpVisible = false;
       model.minesweeper.squares.forEach((s: any) => {
         s.status = false;
         s.state = squareStates.unclicked;
@@ -205,13 +247,13 @@ for (let index = 0; index < 90; index++) {
     },
     get bg() {
       if (this.state == squareStates.null) return "#002200";
-      if (this.state == squareStates.showX) return "red";
+      if (this.state == squareStates.showX) return "#742a09";
       else return "#004400";
     },
     get color() {
       if (this.state == squareStates.showQ) return "white";
       else if (this.state == squareStates.showNumber) return "#03f106";
-      else if (this.state == squareStates.showE) return "red";
+      else if (this.state == squareStates.showE) return "#742a09";
     }, // '#03f106'
     state: squareStates.unclicked,
     get numberValue() {
@@ -376,19 +418,11 @@ function recursiveMineCheck(index: number) {
   const bottom = index + 15 <= 89 ? index + 15 : null;
   const bottomRight = index % 15 != 14 && index + 16 <= 89 ? index + 16 : null;
 
-  if (index == 89) {
-    console.log(topLeft, top, topRight);
-    console.log(left, right);
-    console.log(bottomLeft, bottom, bottomRight);
-  }
-
   if (topLeft != null && topLeft! >= 0 && topLeft! <= 89) {
-    console.log(model.minesweeper.squares[topLeft]);
-
     if (model.minesweeper.squares[topLeft].state == squareStates.unclicked) {
       if (model.minesweeper.squares[topLeft].numberValue == 0) {
         model.minesweeper.squares[topLeft].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${topLeft}`);
+        //console.log(`recursion: ${index} calling ${topLeft}`);
 
         recursiveMineCheck(topLeft);
       } else {
@@ -400,7 +434,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[top].state == squareStates.unclicked) {
       if (model.minesweeper.squares[top].numberValue == 0) {
         model.minesweeper.squares[top].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${top}`);
+        //console.log(`recursion: ${index} calling ${top}`);
         recursiveMineCheck(top);
       } else {
         model.minesweeper.squares[top].state = squareStates.showNumber;
@@ -411,7 +445,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[topRight].state == squareStates.unclicked) {
       if (model.minesweeper.squares[topRight].numberValue == 0) {
         model.minesweeper.squares[topRight].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${topRight}`);
+        //console.log(`recursion: ${index} calling ${topRight}`);
         recursiveMineCheck(topRight);
       } else {
         model.minesweeper.squares[topRight].state = squareStates.showNumber;
@@ -422,7 +456,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[left].state == squareStates.unclicked) {
       if (model.minesweeper.squares[left].numberValue == 0) {
         model.minesweeper.squares[left].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${left}`);
+        //console.log(`recursion: ${index} calling ${left}`);
         recursiveMineCheck(left);
       } else {
         model.minesweeper.squares[left].state = squareStates.showNumber;
@@ -433,7 +467,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[right].state == squareStates.unclicked) {
       if (model.minesweeper.squares[right].numberValue == 0) {
         model.minesweeper.squares[right].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${right}`);
+        //console.log(`recursion: ${index} calling ${right}`);
         recursiveMineCheck(right);
       } else {
         model.minesweeper.squares[right].state = squareStates.showNumber;
@@ -444,7 +478,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[bottomLeft].state == squareStates.unclicked) {
       if (model.minesweeper.squares[bottomLeft].numberValue == 0) {
         model.minesweeper.squares[bottomLeft].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${bottomLeft}`);
+        //console.log(`recursion: ${index} calling ${bottomLeft}`);
         recursiveMineCheck(bottomLeft);
       } else {
         model.minesweeper.squares[bottomLeft].state = squareStates.showNumber;
@@ -455,7 +489,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[bottom].state == squareStates.unclicked) {
       if (model.minesweeper.squares[bottom].numberValue == 0) {
         model.minesweeper.squares[bottom].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${bottom}`);
+        //console.log(`recursion: ${index} calling ${bottom}`);
         recursiveMineCheck(bottom);
       } else {
         model.minesweeper.squares[bottom].state = squareStates.showNumber;
@@ -466,7 +500,7 @@ function recursiveMineCheck(index: number) {
     if (model.minesweeper.squares[bottomRight].state == squareStates.unclicked) {
       if (model.minesweeper.squares[bottomRight].numberValue == 0) {
         model.minesweeper.squares[bottomRight].state = squareStates.null;
-        console.log(`recursion: ${index} calling ${bottomRight}`);
+        //console.log(`recursion: ${index} calling ${bottomRight}`);
         recursiveMineCheck(bottomRight);
       } else {
         model.minesweeper.squares[bottomRight].state = squareStates.showNumber;
@@ -493,7 +527,7 @@ function checkforVictory() {
   //console.log("2nd check: ", rslt);
 
   if (!rslt) {
-    console.log(model.minesweeper.squares);
+    //console.log(model.minesweeper.squares);
     return;
   }
 
